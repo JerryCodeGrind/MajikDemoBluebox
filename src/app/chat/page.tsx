@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { Sidebar, SidebarMenu } from './sidebar';
 import ChatWindow from './chatwindow';
+import { motion } from 'framer-motion';
 
 // Simple page that shows the chat interface for all users
 export default function ChatPage() {
@@ -27,19 +28,56 @@ export default function ChatPage() {
     }
   }, []);
 
+  // Animation variants for fade-in
+  const pageAnimationVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeInOut",
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const childAnimationVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-neutral-900">
+    <motion.div 
+      className="flex h-screen bg-gray-100 dark:bg-neutral-900"
+      initial="hidden"
+      animate="visible"
+      variants={pageAnimationVariants}
+    >
       {/* Sidebar with absolute positioning to prevent affecting main content */}
-      <div className="absolute h-full z-10">
+      <motion.div 
+        className="absolute h-full z-10"
+        variants={childAnimationVariants}
+      >
         <Sidebar>
           <SidebarMenu />
         </Sidebar>
-      </div>
+      </motion.div>
       
       {/* Main content with fixed position and width */}
-      <div className="flex-1 h-full overflow-hidden ml-[80px] md:ml-[80px]">
+      <motion.div 
+        className="flex-1 h-full overflow-hidden ml-[80px] md:ml-[80px]"
+        variants={childAnimationVariants}
+      >
         <ChatWindow />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../chat/Auth';
 import { IconLogout, IconArrowLeft } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
 
 export default function SettingsPage() {
   const { user, logOut } = useAuth();
@@ -18,10 +19,44 @@ export default function SettingsPage() {
     router.push('/chat');
   };
 
+  // Animation variants for fade-in
+  const pageAnimationVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeInOut",
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const childAnimationVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-neutral-900 flex flex-col">
+    <motion.div 
+      className="min-h-screen bg-gray-100 dark:bg-neutral-900 flex flex-col"
+      initial="hidden"
+      animate="visible"
+      variants={pageAnimationVariants}
+    >
       {/* Header */}
-      <header className="bg-white dark:bg-neutral-800 p-4 shadow-sm">
+      <motion.header 
+        className="bg-white dark:bg-neutral-800 p-4 shadow-sm"
+        variants={childAnimationVariants}
+      >
         <div className="max-w-5xl mx-auto flex items-center">
           <button 
             onClick={handleBack}
@@ -31,11 +66,17 @@ export default function SettingsPage() {
           </button>
           <h1 className="ml-4 text-xl font-medium text-gray-800 dark:text-gray-200">Settings</h1>
         </div>
-      </header>
+      </motion.header>
 
       {/* Main content */}
-      <main className="flex-1 max-w-5xl mx-auto w-full p-6">
-        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6 mb-6">
+      <motion.main 
+        className="flex-1 max-w-5xl mx-auto w-full p-6"
+        variants={childAnimationVariants}
+      >
+        <motion.div 
+          className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6 mb-6"
+          variants={childAnimationVariants}
+        >
           <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Account</h2>
           
           {user ? (
@@ -57,9 +98,12 @@ export default function SettingsPage() {
           ) : (
             <p className="text-gray-500 dark:text-gray-400">Not signed in</p>
           )}
-        </div>
+        </motion.div>
 
-        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6">
+        <motion.div 
+          className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6"
+          variants={childAnimationVariants}
+        >
           <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Help</h2>
           <p className="text-gray-600 dark:text-gray-400">
             Bluebox is your AI-powered medical assistant, designed to help answer health-related questions.
@@ -67,8 +111,8 @@ export default function SettingsPage() {
           <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
             <p>Version 1.0.0</p>
           </div>
-        </div>
-      </main>
-    </div>
+        </motion.div>
+      </motion.main>
+    </motion.div>
   );
 } 
