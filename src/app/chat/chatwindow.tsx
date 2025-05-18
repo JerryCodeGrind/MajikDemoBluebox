@@ -93,6 +93,16 @@ export default function ChatWindow() {
     }
   }, [user, authLoading]);
 
+  // Notify sidebar of message count changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('messageCountUpdate', { 
+        detail: { count: messages.length } 
+      });
+      window.dispatchEvent(event);
+    }
+  }, [messages.length]);
+
   // Auto-scroll effect
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -112,16 +122,29 @@ export default function ChatWindow() {
 
   // Function to create new chat
   const createNewChat = useCallback(async () => {
-    if (!user) return;
+    // If we already have an empty chat (no messages), don't create a new one
+    if (messages.length === 0) {
+      return; // Already in a fresh chat, no need to create a new one
+    }
+    
+    if (!user) {
+      // For non-authenticated users, just clear the messages
+      setChatState(prev => ({
+        ...prev,
+        messages: [],
+        currentChatId: null
+      }));
+      return;
+    }
     
     try {
       // Create a new chat in Firebase
       const newChatId = await chatService.createNewChat(user);
       
-      // Update local state
+      // Update local state but don't delete existing chats
       setChatState(prev => ({
         ...prev,
-        messages: [],
+        messages: [], // Clear only the messages for the new chat
         currentChatId: newChatId
       }));
       
@@ -133,7 +156,7 @@ export default function ChatWindow() {
     } catch (error) {
       console.error('Error creating new chat:', error);
     }
-  }, [user]);
+  }, [user, messages]);
 
   // Handle sending a message and receiving a response
   const handleSendMessage = useCallback(async () => {
@@ -159,13 +182,22 @@ export default function ChatWindow() {
         // Create new chat if we don't have one
         if (!activeChatId) {
           activeChatId = await chatService.createNewChat(user);
-          setChatState(prev => ({ ...prev, currentChatId: activeChatId }));
+          setChatState(prev => ({ 
+            ...prev, 
+            currentChatId: activeChatId 
+          }));
+          
+          // Refresh chat list
+          if (typeof window !== 'undefined') {
+            const event = new CustomEvent('refreshChatList');
+            window.dispatchEvent(event);
+          }
         }
         
         // Store message in Firestore
         await chatService.addMessageToChat(activeChatId, userMessage);
         
-        // Add this:
+        // Refresh chat list to update chat titles
         if (typeof window !== 'undefined') {
           const event = new CustomEvent('refreshChatList');
           window.dispatchEvent(event);

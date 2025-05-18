@@ -12,6 +12,7 @@ declare global {
   interface Window {
     createNewChat?: () => void;
     loadChat?: (chatId: string) => void;
+    refreshChatList?: () => void;
   }
 }
 
@@ -125,12 +126,12 @@ const SidebarItem = ({
     <div 
       className={cn(
         "flex items-center h-10 px-5 cursor-pointer rounded-md mx-2",
-        active ? "bg-neutral-800" : "hover:bg-neutral-800"
+        active ? "bg-neutral-800 text-blue-400" : "hover:bg-neutral-800"
       )}
       onClick={onClick}
     >
       <div className="flex items-center gap-5">
-        <Icon className="h-5 w-5 text-neutral-400" />
+        <Icon className={cn("h-5 w-5", active ? "text-blue-400" : "text-neutral-400")} />
         <AnimatePresence>
           {open && (
             <motion.span
@@ -138,7 +139,7 @@ const SidebarItem = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-sm text-neutral-300 whitespace-nowrap"
+              className={cn("text-sm whitespace-nowrap", active ? "text-blue-400" : "text-neutral-300")}
             >
               {text}
             </motion.span>
@@ -172,6 +173,7 @@ export const SidebarMenu = () => {
   const router = useRouter();
   const [chats, setChats] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentMessages, setCurrentMessages] = useState<number>(0);
 
   useEffect(() => {
     if (!user) return;
@@ -179,8 +181,43 @@ export const SidebarMenu = () => {
     chatService.getUserChats(user).then(setChats).finally(() => setLoading(false));
   }, [user]);
 
+  // Listen for refresh events to update chat list
+  useEffect(() => {
+    const handleRefreshChatList = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const updatedChats = await chatService.getUserChats(user);
+        setChats(updatedChats);
+      } catch (error) {
+        console.error('Error refreshing chat list:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('refreshChatList', handleRefreshChatList);
+      
+      // Create custom event listener to track current message count
+      const handleMessageCountUpdate = (event: CustomEvent) => {
+        setCurrentMessages(event.detail.count);
+      };
+      
+      window.addEventListener('messageCountUpdate', handleMessageCountUpdate as EventListener);
+      
+      return () => {
+        window.removeEventListener('refreshChatList', handleRefreshChatList);
+        window.removeEventListener('messageCountUpdate', handleMessageCountUpdate as EventListener);
+      };
+    }
+  }, [user]);
+
   const handleNewChat = () => {
-    window.createNewChat?.();
+    // Only trigger new chat if we have messages in the current chat
+    if (currentMessages > 0) {
+      window.createNewChat?.();
+    }
   };
 
   return (
@@ -192,11 +229,12 @@ export const SidebarMenu = () => {
           <SidebarItem 
             icon={IconEdit} 
             text="New chat" 
-            onClick={handleNewChat} 
+            onClick={handleNewChat}
+            active={currentMessages === 0} // Highlight when we're already in a new chat
           />
         </SidebarSection>
         
-        <SidebarSection title={open ? "Recent" : undefined}>
+        <SidebarSection >
           {loading ? (
             <div className={cn(
               "px-7 py-2 text-sm text-neutral-500",
@@ -221,7 +259,7 @@ export const SidebarMenu = () => {
                         transition={{ duration: 0.2 }}
                         className="truncate max-w-[240px] text-sm text-neutral-300"
                       >
-                        {chat.title}
+                        {chat.title || "New Chat"}
                       </motion.span>
                     )}
                     {!open && (
