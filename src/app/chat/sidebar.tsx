@@ -59,7 +59,7 @@ export const DesktopSidebar = ({ className, children, ...props }: React.Componen
     <motion.div
       className={cn("h-full hidden md:flex md:flex-col bg-neutral-900 border-r border-neutral-700 z-10 no-scrollbar", className)}
       style={{ pointerEvents: 'auto' }}
-      animate={{ width: open ? 300 : 80 }}
+      animate={{ width: open ? 200 : 80 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       onMouseEnter={() => { hoverRef.current && clearTimeout(hoverRef.current); setOpen(true); }}
       onMouseLeave={() => { hoverRef.current = setTimeout(() => setOpen(false), 300); }}

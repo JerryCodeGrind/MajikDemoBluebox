@@ -7,13 +7,12 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 // - useEffect: for side effects like scrolling
 // - useCallback: for optimizing function performance
 
-import { IconSend, IconBrandGoogle } from '@tabler/icons-react'; // Importing icons
+import { IconSend } from '@tabler/icons-react'; // Importing icons
 import { ColourfulText } from './colourful';
 import TextareaAutosize from 'react-textarea-autosize';
 import { motion } from 'framer-motion';
 import { useAuth, AuthButton } from './Auth';
 import { chatService } from './chatService';
-import { useRouter } from 'next/navigation';
 
 // Defining TypeScript types for our messages
 type MessageSender = 'user' | 'assistant'; // Message can be from user or assistant
@@ -26,7 +25,6 @@ type ApiMessage = {
 
 export default function ChatWindow() {
   const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
   
   // State management for our chat application
   const [chatState, setChatState] = useState<{
