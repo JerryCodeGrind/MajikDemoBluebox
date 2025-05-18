@@ -8,13 +8,13 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDRqvubcnpA1U00XCNKYhU9iDEBiwhKPH4",
-  authDomain: "doctorweb-d4b5c.firebaseapp.com",
-  projectId: "doctorweb-d4b5c",
-  storageBucket: "doctorweb-d4b5c.firebasestorage.app",
-  messagingSenderId: "325942932030",
-  appId: "1:325942932030:web:f4a7cfae30a398c02fd76f",
-  measurementId: "G-LYDFSY73QC"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
