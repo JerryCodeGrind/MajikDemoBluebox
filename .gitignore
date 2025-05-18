@@ -1,6 +1,5 @@
 # Python
 .venv
-<<<<<<< jerry-branch
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,7 +12,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -95,15 +93,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts 
 
-firebase.ts
-
-api_key.py
 
 # Add more specific paths
 3d/Frontend/node_modules/
 3d/Frontend/.next/
 3d/backend/api_key.py
-3d/Frontend/src/app/api/chat/route.ts
+
 
 .venv
 
@@ -197,6 +192,3 @@ all_diagnosing_doctor_outputs.json
 3d/Frontend/node_modules/
 3d/Frontend/.next/
 3d/backend/api_key.py
-3d/Frontend/src/app/api/chat/route.ts
-3d/Frontend/src/app/firebase.ts
-3d/Frontend/src/app/lib/utils.ts
